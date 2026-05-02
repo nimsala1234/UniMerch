@@ -21,6 +21,7 @@ public class Order {
     private Double totalAmount;
     private OrderStatus status;
     private LocalDateTime createdAt;
+    private String qrCode;
 
     @Data
     @AllArgsConstructor

@@ -16,6 +16,8 @@ public class OrderService {
     private OrderRepository orderRepo;
     @Autowired
     private ProductRepository productRepo;
+    @Autowired
+    private QRService qrService;
 
     //oreder create
     public Order createOrder(Order order) {
@@ -54,7 +56,9 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
 
-        return orderRepo.save(order);
+        Order newOrder = orderRepo.save(order);
+        order.setQrCode(qrService.generateQRCode(order.getId()));
+        return newOrder;
     }
 
 }

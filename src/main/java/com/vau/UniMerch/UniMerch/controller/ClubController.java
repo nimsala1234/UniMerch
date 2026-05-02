@@ -23,4 +23,10 @@ public class ClubController {
     public List<Club> getAll(){
         return service.getAll();
     }
+
+    @GetMapping("/{id}")
+    public Club getClubById(@PathVariable String id){
+        return service.getClubById(id);
+    }
+
 }

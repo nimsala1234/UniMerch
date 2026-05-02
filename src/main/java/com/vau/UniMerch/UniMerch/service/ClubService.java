@@ -20,4 +20,7 @@ public class ClubService {
         return repo.findAll();
     }
 
+    public Club getClubById(String id) {
+      return repo.findById(id).orElse(null);
+    }
 }

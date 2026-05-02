@@ -12,7 +12,7 @@ public class Club {
 
     @Id
     private String id;
-
+    private String adminEmail;
     private String name;
     private String description;
 
