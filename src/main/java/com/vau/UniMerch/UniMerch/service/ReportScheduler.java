@@ -1,6 +1,5 @@
 package com.vau.UniMerch.UniMerch.service;
 
-import com.vau.UniMerch.UniMerch.model.Club;
 import com.vau.UniMerch.UniMerch.model.ReportDTO;
 import com.vau.UniMerch.UniMerch.repository.ClubRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,10 @@ public class ReportScheduler {
 
     @Autowired
     private ClubRepository clubRepo;
-    //         fixed rate is for testing purpose only
-    @Scheduled(fixedRate = 10000) // every 1st day of month at 9 AM @Scheduled(cron = "0 0 9 1 * ?")
+
+    @Scheduled(cron = "0 0 9 1 * ?")
     public void sendMonthlyReports() {
 
-        // all club send email
         clubRepo.findAll().forEach(club -> {
 
             String clubId = club.getId();
@@ -34,10 +32,15 @@ public class ReportScheduler {
 
             byte[] pdf = pdfService.generateReport(report);
 
+            String recipient = club.getAdminEmail();
+            if (club.getSecretaryEmail() != null) {
+                recipient = club.getSecretaryEmail();
+            }
+
             emailService.sendWithAttachment(
-                    club.getAdminEmail(),
+                    recipient,
                     "Monthly Report - " + club.getName(),
-                    "Attached is your monthly report",
+                    "Attached is your monthly report for " + club.getName(),
                     pdf
             );
 

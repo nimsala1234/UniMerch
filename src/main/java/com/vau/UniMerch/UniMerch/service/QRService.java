@@ -4,6 +4,9 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -19,8 +22,7 @@ public class QRService {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(matrix, "PNG", out);
-
-            return Base64.getEncoder().encodeToString(out.toByteArray());
+             return Base64.getEncoder().encodeToString(out.toByteArray());
 
         } catch (Exception e) {
             throw new RuntimeException("QR generation failed");

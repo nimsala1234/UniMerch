@@ -29,4 +29,8 @@ public class ClubController {
         return service.getClubById(id);
     }
 
+    @PutMapping("/{id}/Settings")
+    public Club UpdatedSettings(@PathVariable String id ,@RequestBody Club body){
+        return service.updateSettings(id,club);
+    }
 }

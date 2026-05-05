@@ -23,4 +23,20 @@ public class ClubService {
     public Club getClubById(String id) {
       return repo.findById(id).orElse(null);
     }
+    public Club updateSettings(String id , Club updatedClub){
+        Club existingClub = repo.findById(id).orElse(null);
+
+        if(existingClub == null){
+            return null;
+        }
+        existingClub.setName(updatedClub.getName());
+        existingClub.setBannerImageUrl(updatedClub.getBannerImageUrl());
+        existingClub.setPickupLocation(updatedClub.getPickupLocation());
+        existingClub.setPickupDay(updatedClub.getPickupDay());
+        existingClub.setSecretaryEmail(updatedClub.getSecretaryEmail());
+
+        return repo.save(existingClub);
+    }
+
+
 }

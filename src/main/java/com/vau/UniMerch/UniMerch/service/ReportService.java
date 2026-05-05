@@ -1,7 +1,9 @@
 package com.vau.UniMerch.UniMerch.service;
 
+import com.vau.UniMerch.UniMerch.dto.res.DashboardStatsDTO;
 import com.vau.UniMerch.UniMerch.model.Club;
 import com.vau.UniMerch.UniMerch.model.Order;
+import com.vau.UniMerch.UniMerch.model.OrderStatus;
 import com.vau.UniMerch.UniMerch.model.ReportDTO;
 import com.vau.UniMerch.UniMerch.repository.ClubRepository;
 import com.vau.UniMerch.UniMerch.repository.OrderRepository;
@@ -58,5 +60,28 @@ public class ReportService {
                 orders.size(),
                 items
         );
+    }
+    //stats tika send karranna
+    public DashboardStatsDTO getDashBoardStates(String clubId){
+        List <Order> orders = orderRepo.findByClubId(clubId);
+
+
+        double revanue = 0;
+        for (Order o : orders){
+            if(o.getStatus() == OrderStatus.COMPLETED){
+                revanue +=o.getTotalAmount();
+            }
+        }
+        int pending=0;
+        int completed=0;
+             for(Order o :orders) {
+                if (o.getStatus() == OrderStatus.PENDING) {
+                 pending++;
+               }
+               if (o.getStatus() == OrderStatus.COMPLETED) {
+                 completed++;
+               }
+          }
+        return new DashboardStatsDTO(revanue, pending, completed);
     }
 }

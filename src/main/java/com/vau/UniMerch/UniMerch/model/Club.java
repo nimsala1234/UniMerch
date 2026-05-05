@@ -16,6 +16,11 @@ public class Club {
     private String name;
     private String description;
 
+    private String bannerImageUrl;
+    private String pickupLocation;
+    private String pickupDay;
+    private String secretaryEmail;
+
     private String adminId;
     private String logoUrl;
 }
