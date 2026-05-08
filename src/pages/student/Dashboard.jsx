@@ -71,26 +71,26 @@ export default function Dashboard() {
             <button
               key={club.id}
               onClick={() => navigate(`/club/${club.id}`)}
-              className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all text-left group border border-gray-200"
+              className="flex flex-col h-full rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all text-left group border border-gray-200"
               style={{ backgroundColor: "#FFFFFF" }}
             >
               {/* Icon Area */}
               <div
-                className="h-44 flex items-center justify-center text-6xl"
+                className="h-44 w-full flex items-center justify-center text-6xl flex-shrink-0"
                 style={{ backgroundColor: "#FEF3C7" }}
               >
                 {club.emoji}
               </div>
 
               {/* Info Area */}
-              <div className="p-5" style={{ backgroundColor: "#FFFFFF" }}>
+              <div className="p-5 flex-grow flex flex-col" style={{ backgroundColor: "#FFFFFF" }}>
                 <h3
                   className="font-semibold text-base mb-1"
                   style={{ color: "#3D0C0C", fontFamily: "'Playfair Display', serif" }}
                 >
                   {club.name}
                 </h3>
-                <p className="text-gray-500 text-sm">{club.desc}</p>
+                <p className="text-gray-500 text-sm flex-grow">{club.desc}</p>
               </div>
             </button>
           ))}

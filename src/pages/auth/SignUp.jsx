@@ -15,14 +15,20 @@ export default function SignUp() {
     <div className="min-h-screen flex" style={{ backgroundColor: "#3D0C0C" }}>
 
       {/* Left Panel - Logo */}
-      <div className="w-1/2 flex items-center justify-center border-r border-white/10">
+      <div className="w-1/2 flex flex-col items-center justify-center border-r border-white/10 gap-8">
         <div className="bg-white rounded-full w-64 h-64 flex items-center justify-center shadow-2xl overflow-hidden">
           <img
             src={logo}
             alt="Unimerch Logo"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
         </div>
+        <h1
+          className="text-5xl font-bold tracking-widest text-white"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          UNIMERCH
+        </h1>
       </div>
 
       {/* Right Panel - Form */}

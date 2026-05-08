@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, Users, ShoppingBag, BarChart2, X, CheckCircle, Trash2 } from "lucide-react";
+import logo from "../../assets/logo.jpeg";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 const initialClubs = [
@@ -449,10 +450,13 @@ export default function UniAdminDashboard() {
 
       {/* Navbar */}
       <nav className="bg-white shadow-sm px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 className="text-xl font-semibold"
-          style={{ color: "#3D0C0C", fontFamily: "'Playfair Display', serif" }}>
-          University Admin Dashboard
-        </h1>
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="Unimerch" className="w-10 h-10 rounded-full object-cover" />
+          <h1 className="text-xl font-semibold"
+            style={{ color: "#3D0C0C", fontFamily: "'Playfair Display', serif" }}>
+            University Admin Dashboard
+          </h1>
+        </div>
         <button
           onClick={() => navigate("/login")}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-800 transition">

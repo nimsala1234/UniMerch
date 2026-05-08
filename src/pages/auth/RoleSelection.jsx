@@ -48,14 +48,14 @@ export default function RoleSelection() {
   return (
     <div className="min-h-screen flex flex-col bg-[#5A1414]">
 
-      <div className="p-6">
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-white">
-          <img
-            src={logo}
-            alt="Logo"
-            className="w-full h-full object-cover scale-110"
-          />
-        </div>
+      <div className="p-6 flex items-center gap-3">
+        <img src={logo} alt="Unimerch" className="w-10 h-10 rounded-full object-cover border border-white bg-white" />
+        <h1
+          className="text-xl font-bold tracking-widest text-white"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          UNIMERCH
+        </h1>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-start pt-10">
