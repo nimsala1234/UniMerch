@@ -5,6 +5,7 @@ import com.vau.UniMerch.UniMerch.model.OrderStatus;
 import com.vau.UniMerch.UniMerch.model.Product;
 import com.vau.UniMerch.UniMerch.repository.OrderRepository;
 import com.vau.UniMerch.UniMerch.repository.ProductRepository;
+import com.vau.UniMerch.UniMerch.service.QRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,35 +20,30 @@ public class OrderService {
     @Autowired
     private QRService qrService;
 
-    //oreder create
     public Order createOrder(Order order) {
-
         double total = 0;
 
         for (Order.OrderItem item : order.getItems()) {
-
             Product prd = productRepo.findById(item.getProductId()).orElse(null);
 
             if (prd != null) {
-
                 item.setProductName(prd.getName());
                 item.setPriceAtPurchase(prd.getPrice());
 
-                //  stock eka  check
+
                 for (Product.ProductVariant v : prd.getVariants()) {
-
                     if (v.getSize().equals(item.getSize())) {
-
                         if (v.getStock() < item.getQuantity()) {
-                            throw new RuntimeException("Out of stock");
+                            throw new RuntimeException("Out of stock for size: " + v.getSize());
                         }
-
                         v.setStock(v.getStock() - item.getQuantity());
                     }
                 }
 
+                // Save the product with updated stock
                 productRepo.save(prd);
 
+                // Calculate the running total
                 total += item.getQuantity() * item.getPriceAtPurchase();
             }
         }
@@ -56,9 +52,14 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
 
-        Order newOrder = orderRepo.save(order);
-        order.setQrCode(qrService.generateQRCode(order.getId()));
-        return newOrder;
-    }
+        //  Save the order first to get the ID
+        Order savedOrder = orderRepo.save(order);
 
+        // Generate the QR using that ID
+        String qr = qrService.generateQRCode(savedOrder.getId());
+        savedOrder.setQrCode(qr);
+
+        //  Save AGAIN to store the QR code in the database
+        return orderRepo.save(savedOrder);
+    }
 }

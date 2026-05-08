@@ -19,7 +19,7 @@ public class User {
     private Role role;
 
     public enum Role {
-        STUDENT,
+        STUDENT_STAFF,
         CLUB_ADMIN,
         UNI_ADMIN
     }

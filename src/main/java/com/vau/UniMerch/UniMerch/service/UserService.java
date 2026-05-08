@@ -3,6 +3,7 @@ package com.vau.UniMerch.UniMerch.service;
 import com.vau.UniMerch.UniMerch.model.User;
 import com.vau.UniMerch.UniMerch.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +13,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     public User Createuser(User Data){
+        Data.setPassword(encoder.encode(Data.getPassword()));
         return userRepo.save(Data);
     }
     public List<User> getAllUsers() {
