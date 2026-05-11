@@ -21,9 +21,9 @@ public class Product {
 
     private double price;
 
-    private boolean preorder;
+    //private boolean preorder;
 
-    private String imageUrl;
+    private byte[] imageUrl;
 
     private List<ProductVariant> variants;
 

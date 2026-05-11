@@ -16,7 +16,7 @@ public class Club {
     private String name;
     private String description;
 
-    private String bannerImageUrl;
+    private byte[] bannerImageUrl;
     private String pickupLocation;
     private String pickupDay;
     private String secretaryEmail;
