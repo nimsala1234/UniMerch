@@ -51,6 +51,6 @@ public class AuthController {
             return new AuthResponse(token, user.getRole().toString(), user.getEmail());
         }
 
-        throw new RuntimeException("Invalid email or password");
+        throw new RuntimeException(" email or password is invalid");
     }
 }
