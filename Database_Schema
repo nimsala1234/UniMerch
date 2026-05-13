@@ -1,0 +1,489 @@
+# UniMerch Database Design Documentation
+
+## Project Overview
+
+UniMerch is an e-commerce based university merchandise management system. The database is designed to support:
+
+* User authentication and authorization
+* Product management
+* Category management
+* Shopping cart functionality
+* Order processing
+* Payment handling
+* Inventory management
+* Product reviews and ratings
+* Admin management
+
+---
+
+# Database Technology
+
+Recommended Database:
+
+* MySQL 8+
+* MariaDB
+* PostgreSQL
+
+Recommended Character Set:
+
+```sql
+utf8mb4
+```
+
+Recommended Storage Engine:
+
+```sql
+InnoDB
+```
+
+---
+
+# Database Name
+
+```sql
+CREATE DATABASE unimerch_db;
+```
+
+---
+
+# Entity Relationship Structure
+
+```text
+Users
+ ├── Cart
+ ├── Orders
+ │     └── Order_Items
+ │              └── Products
+ ├── Reviews
+ └── Payments
+
+Products
+ └── Categories
+```
+
+---
+
+# Tables Structure
+
+# 1. Users Table
+
+Purpose:
+Stores all system users including customers and administrators.
+
+```sql
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    role ENUM('customer','admin') DEFAULT 'customer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Fields Explanation
+
+| Field         | Type         | Description        |
+| ------------- | ------------ | ------------------ |
+| user_id       | INT          | Unique user ID     |
+| full_name     | VARCHAR(100) | User full name     |
+| email         | VARCHAR(100) | User email         |
+| password_hash | VARCHAR(255) | Encrypted password |
+| phone         | VARCHAR(20)  | Contact number     |
+| role          | ENUM         | User role          |
+| created_at    | TIMESTAMP    | Registration date  |
+
+---
+
+# 2. Categories Table
+
+Purpose:
+Stores product categories.
+
+```sql
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+```
+
+## Example Categories
+
+* Hoodies
+* T-Shirts
+* Caps
+* Mugs
+* Stationery
+
+---
+
+# 3. Products Table
+
+Purpose:
+Stores all merchandise items.
+
+```sql
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT,
+    product_name VARCHAR(150) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    image_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (category_id)
+    REFERENCES categories(category_id)
+    ON DELETE SET NULL
+);
+```
+
+## Relationships
+
+* One category can contain many products.
+* One product belongs to one category.
+
+---
+
+# 4. Cart Table
+
+Purpose:
+Stores temporary cart items added by users.
+
+```sql
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (product_id)
+    REFERENCES products(product_id)
+    ON DELETE CASCADE
+);
+```
+
+## Relationships
+
+* One user can add multiple products to cart.
+* One product can appear in many carts.
+
+---
+
+# 5. Orders Table
+
+Purpose:
+Stores order summary information.
+
+```sql
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+
+    order_status ENUM(
+        'pending',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled'
+    ) DEFAULT 'pending',
+
+    shipping_address TEXT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE
+);
+```
+
+## Order Workflow
+
+```text
+Pending → Processing → Shipped → Delivered
+```
+
+---
+
+# 6. Order Items Table
+
+Purpose:
+Stores products inside each order.
+
+```sql
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (order_id)
+    REFERENCES orders(order_id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (product_id)
+    REFERENCES products(product_id)
+    ON DELETE CASCADE
+);
+```
+
+## Relationships
+
+* One order can contain many products.
+* One product can appear in many orders.
+
+---
+
+# 7. Payments Table
+
+Purpose:
+Handles payment transaction details.
+
+```sql
+CREATE TABLE payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+
+    payment_method ENUM(
+        'card',
+        'paypal',
+        'cash_on_delivery'
+    ) NOT NULL,
+
+    payment_status ENUM(
+        'pending',
+        'paid',
+        'failed'
+    ) DEFAULT 'pending',
+
+    transaction_id VARCHAR(255),
+    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id)
+    REFERENCES orders(order_id)
+    ON DELETE CASCADE
+);
+```
+
+---
+
+# 8. Reviews Table
+
+Purpose:
+Allows customers to review products.
+
+```sql
+CREATE TABLE reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (product_id)
+    REFERENCES products(product_id)
+    ON DELETE CASCADE
+);
+```
+
+---
+
+# Database Normalization
+
+The database schema follows:
+
+## First Normal Form (1NF)
+
+* Atomic values
+* No repeating groups
+
+## Second Normal Form (2NF)
+
+* No partial dependencies
+
+## Third Normal Form (3NF)
+
+* No transitive dependencies
+
+---
+
+# Indexing Recommendations
+
+```sql
+CREATE INDEX idx_product_name ON products(product_name);
+CREATE INDEX idx_order_user ON orders(user_id);
+CREATE INDEX idx_cart_user ON cart(user_id);
+CREATE INDEX idx_review_product ON reviews(product_id);
+```
+
+---
+
+# Security Considerations
+
+## Password Security
+
+Passwords should NEVER be stored as plain text.
+
+Use:
+
+* bcrypt hashing
+* JWT authentication
+
+Example:
+
+```javascript
+bcrypt.hash(password, 10)
+```
+
+---
+
+# Recommended Backend API Modules
+
+## Authentication Module
+
+* Register user
+* Login user
+* JWT token generation
+
+## Product Module
+
+* Add product
+* Update product
+* Delete product
+* Get all products
+
+## Cart Module
+
+* Add to cart
+* Remove from cart
+* Update quantity
+
+## Order Module
+
+* Place order
+* Cancel order
+* Track order
+
+## Payment Module
+
+* Payment processing
+* Payment verification
+
+---
+
+# Sample Insert Queries
+
+## Insert Category
+
+```sql
+INSERT INTO categories(category_name, description)
+VALUES('T-Shirts', 'University branded t-shirts');
+```
+
+## Insert Product
+
+```sql
+INSERT INTO products(
+    category_id,
+    product_name,
+    description,
+    price,
+    stock_quantity
+)
+VALUES(
+    1,
+    'UniMerch Black Hoodie',
+    'Premium cotton hoodie',
+    4500.00,
+    100
+);
+```
+
+---
+
+# Recommended Folder Structure
+
+```text
+backend/
+ ├── config/
+ ├── controllers/
+ ├── models/
+ ├── routes/
+ ├── middleware/
+ ├── database/
+ │      ├── schema.sql
+ │      ├── seed.sql
+ │      └── migrations/
+ └── server.js
+```
+
+---
+
+# Suggested GitHub Contribution
+
+To demonstrate database contribution in the repository:
+
+## Recommended Files to Push
+
+```text
+/database
+    schema.sql
+    seed.sql
+    ERD.png
+    README_DATABASE.md
+```
+
+---
+
+# Suggested Commit Messages
+
+```text
+Added complete MySQL database schema for UniMerch project
+
+Implemented normalized database structure with:
+- Users
+- Products
+- Categories
+- Orders
+- Cart
+- Payments
+- Reviews
+```
+
+---
+
+# Future Improvements
+
+Possible future enhancements:
+
+* Wishlist system
+* Coupon management
+* Multiple product images
+* Product size/color variations
+* Delivery tracking
+* Inventory alerts
+* Admin analytics dashboard
+* University event merchandise module
+
+---
+
+# Conclusion
+
+The UniMerch database schema is designed using relational database principles with normalized table structures, foreign key relationships, and scalable architecture suitable for a modern e-commerce application.
+
+The schema supports authentication, product management, ordering, payment processing, and customer interactions while maintaining data integrity and scalability.
